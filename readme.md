@@ -1,17 +1,25 @@
-**Package for unit testing Laravel form request classes.**
+# **Package for unit testing Laravel form request classes.**
 
-# Why
+## Why
+
 Colin DeCarlo gave a talk on [Laracon online 21](https://laracon.net/) about unit testing Laravel form requests classes. If you haven't seen his talk, I recommend that you watch it.
 He prefers testing form requests as a unit and not as feature tests.I like this approach too.
 
 He asked Freek Van der Herten to convert his gist code to package. Granted, I am not Freek; however, I accepted the challenge, and I did it myself. So this package is just a wrapper for [Colin's gist](https://gist.github.com/colindecarlo/9ba9bd6524127fee7580ae66c6d4709d), and I added two methods from [Jason's package](https://github.com/jasonmccreary/laravel-test-assertions) for asserting that controller has the form request.
 
-# Installation
-`composer require --dev jcergolj/laravel-form-request-assertions`
+## Installation
 
-# Usage
-### Controller
+Required PHP >=8.0
+
+```bash
+composer require --dev jcergolj/laravel-form-request-assertions
 ```
+
+## Usage
+
+### Controller
+
+```php
 <?php
 
 namespace App\Http\Controllers;
@@ -23,13 +31,14 @@ class PostController extends Controller
 {
     public function store(CreatePostRequest $request)
     {
+        // ...
     }
 }
-
 ```
 
 ### web.php routes
-```
+
+```php
 <?php
 
 use App\Http\Controllers\PostController;
@@ -38,7 +47,8 @@ Route::post('posts', [PostController::class, 'store']);
 ```
 
 ### Request
-```
+
+```php
 <?php
 
 namespace App\Http\Requests;
@@ -57,12 +67,13 @@ class CreatePostRequest extends FormRequest
         return ['email' => ['required', 'email']];
     }
 }
-
 ```
 
-### Add trait to unit test
+### Add the trait to a unit test
+
 After package installation add the `TestableFormRequest` trait
-```
+
+```php
 <?php
 
 namespace Tests\Unit;
@@ -73,12 +84,14 @@ use Jcergolj\FormRequestAssertions\TestableFormRequest;
 class CreatePostRequestTest extends TestCase
 {
     use TestableFormRequest;
-}
 
+    // ...
+}
 ```
 
 ### Does the controller have the form request test?
-```
+
+```php
 public function controller_has_form_request()
 {
     $this->assertActionUsesFormRequest(PostController::class, 'store', CreatePostRequest::class);
@@ -86,7 +99,8 @@ public function controller_has_form_request()
 ```
 
 ### Test Validation Rules
-```
+
+```php
 public function email_is_required()
 {
     $this->createFormRequest(CreatePostRequest::class)
@@ -97,7 +111,8 @@ public function email_is_required()
 ```
 
 ### Test Form Request
-```
+
+```php
  /** @test */
 function test_post_author_is_authorized()
 {
@@ -111,66 +126,68 @@ function test_post_author_is_authorized()
 }
 ```
 
-
 # Available Methods
-```
+
+```php
 createFormRequest(string $requestClass, $headers = [])
 ```
 
-```
+```php
 assertRouteUsesFormRequest(string $routeName, string $formRequest)
 ```
 
-```
+```php
 assertActionUsesFormRequest(string $controller, string $method, string $form_request)
 ```
 
-```
+```php
 validate(array $data)
 ```
 
-```
+```php
 by(Authenticatable $user = null)
 ```
 
-```
+```php
 actingAs(Authenticatable $user = null)
 ```
 
-```
+```php
 withParams(array $params)
 ```
 
-```
+```php
 withParam(string $param, $value)
 ```
 
-```
+```php
 assertAuthorized()
 ```
 
-```
+```php
 assertNotAuthorized()
 ```
 
-```
+```php
 assertPasses()
 ```
 
-```
+```php
 assertFails($expectedFailedRules = [])
 ```
 
-```
+```php
 assertHasMessage($message, $rule = null)
 ```
 
-```
+```php
 getFailedRules()
 ```
 
-# Contributors
+## Contributors
+
 A huge thanks go to Colin and Jason. I created a package from [Colin's gist](https://gist.github.com/colindecarlo/9ba9bd6524127fee7580ae66c6d4709d) and I copied two methods from [Jason's package](https://github.com/jasonmccreary/laravel-test-assertions).
+
 <table>
 <tr>
 <td>
