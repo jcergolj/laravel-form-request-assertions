@@ -45,22 +45,13 @@ class TestValidationResult
         $failedRules = $this->getFailedRules();
 
         foreach ($expectedFailedRules as $expectedFailedRule => $constraints) {
-            Assert::assertArrayHasKey($expectedFailedRule, $failedRules);
-            Assert::assertStringContainsString($constraints, $failedRules[$expectedFailedRule]);
-        }
-
-        return $this;
-    }
-
-    public function assertParamContainsInstanceOfRule($param, $instance)
-    {
-        foreach ($this->validator->getRules()[$param] as $rule) {
-            if (is_a($rule, $instance)) {
-                return Assert::assertTrue(true, true);
+            if (class_exists($constraints)) {
+                Assert::assertTrue($failedRules->contains(strtolower($constraints)));
+            } else {
+                Assert::assertArrayHasKey($expectedFailedRule, $failedRules);
+                Assert::assertStringContainsString($constraints, $failedRules[$expectedFailedRule]);
             }
         }
-
-        Assert::fail("$param does not have rule intance of $instance.");
 
         return $this;
     }
@@ -114,3 +105,4 @@ class TestValidationResult
         return Arr::flatten($messages);
     }
 }
+w
