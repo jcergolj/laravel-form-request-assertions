@@ -1,0 +1,29 @@
+name: Apply PHP Code Style
+
+on:
+    push:
+        branches:
+            - 'master'
+    pull_request:
+        paths:
+            - '**.php'
+
+jobs:
+    php-cs-fixer:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Install
+              run: composer install
+
+            - name: Run php-cs-fixer
+              run: ./vendor/bin/php-cs-fixer fix
+
+
+            - uses: stefanzweifel/git-auto-commit-action@v4
+              id: commit
+              with:
+                  commit_message: 'phpcs fixes'
+                  commit_options:  --amend --no-edit
+                  push_options: '--force'
