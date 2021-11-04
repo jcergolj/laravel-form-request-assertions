@@ -45,12 +45,7 @@ class TestValidationResult
         $failedRules = $this->getFailedRules();
 
         foreach ($expectedFailedRules as $expectedFailedRule => $constraints) {
-            if (class_exists($constraints)) {
-                Assert::assertTrue($failedRules->contains(strtolower($constraints)));
-            } else {
-                Assert::assertArrayHasKey($expectedFailedRule, $failedRules);
-                Assert::assertStringContainsString($constraints, $failedRules[$expectedFailedRule]);
-            }
+            $this->assertRules($constraints, $failedRules, $expectedFailedRule);
         }
 
         return $this;
@@ -104,4 +99,21 @@ class TestValidationResult
 
         return Arr::flatten($messages);
     }
+
+    /**
+     *
+     *
+     * @param  mixed  name
+     * @return mixed
+     */
+    protected function assertRules($constraints, $failedRules, $expectedFailedRule)
+    {
+        if (class_exists($constraints)) {
+            return Assert::assertContains(strtolower($constraints), $failedRules);
+        }
+
+        Assert::assertArrayHasKey($expectedFailedRule, $failedRules);
+        Assert::assertStringContainsString($constraints, $failedRules[$expectedFailedRule]);
+    }
 }
+
