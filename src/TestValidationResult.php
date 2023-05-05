@@ -116,4 +116,3 @@ class TestValidationResult
         Assert::assertStringContainsString($constraints, $failedRules[$expectedFailedRule]);
     }
 }
-

@@ -2,11 +2,12 @@
 
 namespace Jcergolj\FormRequestAssertions;
 
-use Illuminate\Foundation\Http\FormRequest;
+use ReflectionMethod;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
-use Illuminate\Support\Facades\Route as RouteFacade;
+use Illuminate\Foundation\Http\FormRequest;
 use PHPUnit\Framework\Assert as PHPUnitAssert;
+use Illuminate\Support\Facades\Route as RouteFacade;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 trait TestableFormRequest
@@ -27,6 +28,21 @@ trait TestableFormRequest
         }
 
         $this->assertActionUsesFormRequest($controller, $method, $formRequest);
+    }
+
+    public function assertContainsFormRequest(string $form_request)
+    {
+        $controller = RouteFacade::getRoutes()->getByName(RouteFacade::currentRouteName())->getController();
+        $method = RouteFacade::getRoutes()->getByName(RouteFacade::currentRouteName())->getActionMethod();
+
+        $reflectionMethod = new ReflectionMethod($controller, $method);
+        $reflectionParams = collect($reflectionMethod->getParameters());
+
+        PHPUnitAssert::assertTrue($reflectionParams->contains(function ($reflectionParam) {
+            return class_basename($reflectionParam->getType()->getName())."::class" instanceof $form_request;
+        }), 'Action "'.$method.'" does not have validation using the "'.$form_request.'" Form Request.');
+
+        return $this;
     }
 
     public function assertActionUsesFormRequest(string $controller, string $method, string $form_request)

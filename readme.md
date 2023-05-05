@@ -98,6 +98,17 @@ public function controller_has_form_request()
 }
 ```
 
+or
+
+```php
+public function controller_has_form_request()
+{
+    $this->post(route('users.store'));
+
+    $this->assertContainsFormRequest(CreateUserRequest::class);
+}
+```
+
 ### Test Validation Rules
 
 ```php
@@ -107,10 +118,10 @@ public function email_is_required()
         ->validate(['email' => ''])
         ->assertFails(['email' => 'required'])
 	    ->assertHasMessage('Email is required', 'required');
-	    
+
     $this->createFormRequest(CreatePostRequest::class)
         ->validate(['password' => 'short'])
-        ->assertFails(['password' => App\Rules\PasswordRule::class]); //custom password rule class	    
+        ->assertFails(['password' => App\Rules\PasswordRule::class]); //custom password rule class
 }
 ```
 
