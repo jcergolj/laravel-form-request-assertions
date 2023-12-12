@@ -51,6 +51,11 @@ class TestValidationResult
         return $this;
     }
 
+    public function ddFailedRules()
+    {
+        dd($this->getFailedRules());
+    }
+
     public function assertHasMessage($message, $rule = null)
     {
         $validationMessages = $this->getValidationMessages($rule);
