@@ -38,8 +38,8 @@ trait TestableFormRequest
         $reflectionMethod = new ReflectionMethod($controller, $method);
         $reflectionParams = collect($reflectionMethod->getParameters());
 
-        PHPUnitAssert::assertTrue($reflectionParams->contains(function ($reflectionParam) {
-            return class_basename($reflectionParam->getType()->getName())."::class" instanceof $form_request;
+        PHPUnitAssert::assertTrue($reflectionParams->contains(function ($reflectionParam) use ($form_request) {
+            return $reflectionParam->getType()->getName() ===  $form_request;
         }), 'Action "'.$method.'" does not have validation using the "'.$form_request.'" Form Request.');
 
         return $this;
