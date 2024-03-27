@@ -20,7 +20,7 @@ class TestFormRequest
 
     public function validator(array $data = [])
     {
-        $this->request->request = new ParameterBag($data);
+        $this->request->request->replace($data);
 
         return \Closure::fromCallable(function () {
             return $this->getValidatorInstance();
