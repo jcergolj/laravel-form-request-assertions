@@ -5,7 +5,7 @@ namespace Jcergolj\FormRequestAssertions;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\Access\Gate;
+use Illuminate\Support\Facades\Gate;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertTrue;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 class TestFormRequest
 {
     private FormRequest $request;
+    protected ?\Mockery\ClosureWrapper $userResolver = null;
 
     public function __construct(FormRequest $request)
     {
@@ -43,7 +44,8 @@ class TestFormRequest
 
     public function by(Authenticatable $user = null)
     {
-        $this->request->setUserResolver(fn () => $user);
+        $this->userResolver = \Mockery::spy(fn() => $user);
+        $this->request->setUserResolver(fn (...$args) => call_user_func_array($this->userResolver, $args));
 
         return $this;
     }
@@ -87,16 +89,23 @@ class TestFormRequest
         );
     }
 
-    public function assertCallsGate($action, $params): void
+    public function assertCallsGate($action, $params, $guard = null): void
     {
-        Gate::expects('forUser')
+        Gate::shouldReceive('forUser')
             ->andReturnSelf();
         Gate::shouldReceive('check')
             ->once()
             ->with($action, $params)
             ->andReturn(true);
+        if ($guard && !$this->userResolver) {
+            $this->by(null);
+        }
 
         $this->bully(fn () => $this->passesAuthorization(), $this->request);
+        if ($guard) {
+            $this->userResolver->shouldHaveBeenCalled()
+                ->with($guard);
+        }
     }
 
     private function bully(\Closure $elevatedFunction, object $targetObject)
