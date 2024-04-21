@@ -86,6 +86,18 @@ class TestFormRequest
         );
     }
 
+    public function assertCallsGate($action, $params): void
+    {
+        \Gate::expects('forUser')
+            ->andReturnSelf();
+        \Gate::shouldReceive('check')
+            ->once()
+            ->with($action, $params)
+            ->andReturn(true);
+
+        $this->bully(fn () => $this->passesAuthorization(), $this->request);
+    }
+
     private function bully(\Closure $elevatedFunction, object $targetObject)
     {
         return \Closure::fromCallable($elevatedFunction)->call($targetObject);
