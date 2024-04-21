@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 class TestFormRequest
 {
-    private FormRequest $request;
+    protected FormRequest $request;
 
     public function __construct(FormRequest $request)
     {
@@ -86,7 +86,7 @@ class TestFormRequest
         );
     }
 
-    private function bully(\Closure $elevatedFunction, object $targetObject)
+    protected function bully(\Closure $elevatedFunction, object $targetObject)
     {
         return \Closure::fromCallable($elevatedFunction)->call($targetObject);
     }

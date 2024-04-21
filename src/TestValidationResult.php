@@ -10,9 +10,9 @@ use PHPUnit\Framework\Assert;
 
 class TestValidationResult
 {
-    private Validator $validator;
+    protected Validator $validator;
 
-    private ?ValidationException $failed;
+    protected ?ValidationException $failed;
 
     public function __construct(Validator $validator, ?ValidationException $failed = null)
     {
