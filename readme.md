@@ -184,6 +184,14 @@ assertNotAuthorized()
 ```
 
 ```php
+/**
+ * example: assertCallsGate('create', User::class); 
+ * -> asserts that the `authorize` method of the request checks that `$user->can('create', User::class)` 
+ */
+assertCallsGate($action, $params)
+```
+
+```php
 assertPasses()
 ```
 
