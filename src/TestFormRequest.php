@@ -5,6 +5,7 @@ namespace Jcergolj\FormRequestAssertions;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\Gate;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertTrue;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -88,9 +89,9 @@ class TestFormRequest
 
     public function assertCallsGate($action, $params): void
     {
-        \Gate::expects('forUser')
+        Gate::expects('forUser')
             ->andReturnSelf();
-        \Gate::shouldReceive('check')
+        Gate::shouldReceive('check')
             ->once()
             ->with($action, $params)
             ->andReturn(true);
