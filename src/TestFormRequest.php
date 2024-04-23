@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 class TestFormRequest
 {
     private FormRequest $request;
-    protected ?\Mockery\ClosureWrapper $userResolver = null;
+    protected null|\Closure|\Mockery\LegacyMockInterface $userResolver = null;
 
     public function __construct(FormRequest $request)
     {
