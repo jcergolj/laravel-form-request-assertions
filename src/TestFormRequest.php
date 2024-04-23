@@ -97,11 +97,13 @@ class TestFormRequest
             ->once()
             ->with($action, $params)
             ->andReturn(true);
-        if ($guard && !$this->userResolver) {
-            $this->by(null);
+
+        if (!$this->userResolver) {
+            $this->by(new class extends \Illuminate\Foundation\Auth\User {});
         }
 
         $this->bully(fn () => $this->passesAuthorization(), $this->request);
+
         if ($guard) {
             $this->userResolver->shouldHaveBeenCalled()
                 ->with($guard);
