@@ -141,6 +141,37 @@ function test_post_author_is_authorized()
 }
 ```
 
+## Extending
+
+If you need additional/custom assertions, you can easily extend the `\Jcergolj\FormRequestAssertions\TestFormRequest` class.
+
+In your project
+1. Create a new class, for example: `\Tests\Support\TestFormRequest` extending the `\Jcergolj\FormRequestAssertions\TestFormRequest` class.
+   ```php
+   namespace Tests\Support;
+   class TestFormRequest extends \Jcergolj\FormRequestAssertions\TestFormRequest
+   {
+     public function assertSomethingImportant()
+     {
+       // your assertions on `$this->request`
+     }
+   }
+   ```
+2. Create a new trait, for example: `\Tests\Traits\TestableFormRequest` using the `\Jcergolj\FormRequestAssertions\TestableFormRequest` trait.
+3. Overwrite the `\Jcergolj\FormRequestAssertions\TestableFormRequest::createNewTestFormRequest` method to return an instance of the class created in (1).
+   ```php
+   namespace Tests\Support;
+   trait TestableFormRequest {
+     use \Jcergolj\FormRequestAssertions\TestableFormRequest;
+   
+     protected function createNewTestFormRequest(FormRequest $request): TestFormRequest
+     {
+       return new \Tests\Support\TestFormRequest($request);
+     }
+   }
+   ```
+4. Use your custom trait instead of `\Jcergolj\FormRequestAssertions\TestableFormRequest` on your test classes
+
 # Available Methods
 
 ```php
