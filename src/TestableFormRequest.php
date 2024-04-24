@@ -85,6 +85,11 @@ trait TestableFormRequest
         $route->parameters = [];
         $formRequest->setRouteResolver(fn () => $route);
 
-        return new TestFormRequest($formRequest);
+        return $this->createNewTestFormRequest($formRequest);
+    }
+
+    protected function createNewTestFormRequest(FormRequest $request): TestFormRequest
+    {
+        return new TestFormRequest($request);
     }
 }
