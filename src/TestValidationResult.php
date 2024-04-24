@@ -106,8 +106,6 @@ class TestValidationResult
     }
 
     /**
-     *
-     *
      * @param  mixed  name
      * @return mixed
      */

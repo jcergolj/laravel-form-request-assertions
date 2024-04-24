@@ -20,6 +20,10 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.2"
+        "friendsofphp/php-cs-fixer": "^3.2",
+        "laravel/pint": "^1.15"
+    },
+    "scripts": {
+        "pint": "vendor/bin/pint"
     }
 }

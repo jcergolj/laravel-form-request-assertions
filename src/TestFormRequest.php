@@ -5,9 +5,9 @@ namespace Jcergolj\FormRequestAssertions;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
+
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertTrue;
-use Symfony\Component\HttpFoundation\ParameterBag;
 
 class TestFormRequest
 {
@@ -40,14 +40,14 @@ class TestFormRequest
         return new TestValidationResult($validator);
     }
 
-    public function by(Authenticatable $user = null)
+    public function by(?Authenticatable $user = null)
     {
         $this->request->setUserResolver(fn () => $user);
 
         return $this;
     }
 
-    public function actingAs(Authenticatable $user = null)
+    public function actingAs(?Authenticatable $user = null)
     {
         return $this->by($user);
 
