@@ -145,7 +145,6 @@ function test_post_author_is_authorized()
 
 If you need additional/custom assertions, you can easily extend the `\Jcergolj\FormRequestAssertions\TestFormRequest` class.
 
-In your project
 1. Create a new class, for example: `\Tests\Support\TestFormRequest` extending the `\Jcergolj\FormRequestAssertions\TestFormRequest` class.
    ```php
    namespace Tests\Support;
@@ -163,7 +162,7 @@ In your project
    namespace Tests\Support;
    trait TestableFormRequest {
      use \Jcergolj\FormRequestAssertions\TestableFormRequest;
-   
+
      protected function createNewTestFormRequest(FormRequest $request): TestFormRequest
      {
        return new \Tests\Support\TestFormRequest($request);
