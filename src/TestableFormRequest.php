@@ -35,6 +35,10 @@ trait TestableFormRequest
         $controller = RouteFacade::getRoutes()->getByName(RouteFacade::currentRouteName())->getController();
         $method = RouteFacade::getRoutes()->getByName(RouteFacade::currentRouteName())->getActionMethod();
 
+        if ($method === $controller::class) {
+            $method = '__invoke';
+        }
+
         $reflectionMethod = new ReflectionMethod($controller, $method);
         $reflectionParams = collect($reflectionMethod->getParameters());
 
