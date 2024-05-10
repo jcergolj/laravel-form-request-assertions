@@ -141,6 +141,21 @@ function test_post_author_is_authorized()
 }
 ```
 
+### Test data preparation
+
+Test how data is prepared within the `prepareForValidation` method of the `FormRequest`.
+
+```php
+ /** @test */
+function test_transforms_email_to_lowercase_before_validation()
+{
+    $this->createFormRequest(CreatePostRequest::class)
+        ->onPreparedData(['email' => 'TeSt@ExAmPlE.cOm'], function (array $preparedData) {
+            $this->assertEquals('test@example.com', $preparedData['email']);
+        });
+}
+```
+
 ## Extending
 
 If you need additional/custom assertions, you can easily extend the `\Jcergolj\FormRequestAssertions\TestFormRequest` class.
