@@ -86,6 +86,13 @@ class TestFormRequest
         );
     }
 
+    public function onPreparedData(array $data, callable $callback)
+    {
+        $callback($this->prepareForValidation($data));
+
+        return $this;
+    }
+
     protected function bully(\Closure $elevatedFunction, object $targetObject)
     {
         return \Closure::fromCallable($elevatedFunction)->call($targetObject);
