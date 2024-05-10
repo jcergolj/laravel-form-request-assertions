@@ -109,7 +109,7 @@ public function controller_has_form_request()
 }
 ```
 
-### Test Validation Rules
+### Test failed Validation Rules
 
 ```php
 public function email_is_required()
@@ -124,6 +124,24 @@ public function email_is_required()
         ->assertFails(['password' => App\Rules\PasswordRule::class]); //custom password rule class
 }
 ```
+
+### Test passed validation rules
+
+In some situations you might not care weather the whole request validates but that a set of validation rules passes.
+
+```php
+public function test_email_is_not_required()
+{
+    /**
+     * Validation rules: ['email' => 'email|nullable']
+     */
+    $this->createFormRequest(CreatePostRequest::class)
+        ->validate([])
+        ->assertPassesRules(['email' => 'required']);
+}
+```
+
+**ALERT** this only checks that the rule didn't fail, it doesn't check that the rule was actually applied in the first place!
 
 ### Test Form Request
 
