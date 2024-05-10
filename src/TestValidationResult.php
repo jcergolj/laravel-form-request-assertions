@@ -118,4 +118,36 @@ class TestValidationResult
         Assert::assertArrayHasKey($expectedFailedRule, $failedRules);
         Assert::assertStringContainsString($constraints, $failedRules[$expectedFailedRule]);
     }
+
+    public function assertPassesRules($expectedPassedRules = []): static
+    {
+        if ($this->validator->passes()) {
+            Assert::assertTrue(true); // Prevent assertion-count is 0
+
+            return $this;
+        }
+
+        $failedRules = $this->getFailedRules();
+
+        foreach ($expectedPassedRules as $expectedPassedRule => $constraints) {
+            $this->assertPassedRule($constraints, $failedRules, $expectedPassedRule);
+        }
+
+        return $this;
+    }
+
+    protected function assertPassedRule($constraints, $failedRules, $expectedFailedRule): void
+    {
+        if (class_exists($constraints)) {
+            Assert::assertNotContains(strtolower($constraints), $failedRules);
+
+            return;
+        }
+
+        if ($failedRules->has($expectedFailedRule)) {
+            Assert::assertStringNotContainsString($constraints, $failedRules[$expectedFailedRule]);
+        } else {
+            Assert::assertTrue(true); // Prevent assertion-count is 0
+        }
+    }
 }
