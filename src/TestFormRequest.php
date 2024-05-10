@@ -29,7 +29,7 @@ class TestFormRequest
 
     public function validate(array $data)
     {
-        $validator = $this->validator($data);
+        $validator = $this->validator($this->prepareForValidation($data));
 
         try {
             $validator->validate();
@@ -89,5 +89,13 @@ class TestFormRequest
     protected function bully(\Closure $elevatedFunction, object $targetObject)
     {
         return \Closure::fromCallable($elevatedFunction)->call($targetObject);
+    }
+
+    protected function prepareForValidation(array $data): array
+    {
+        $this->request->replace($data);
+        $this->bully(fn () => $this->prepareForValidation(), $this->request);
+
+        return $this->request->all();
     }
 }
