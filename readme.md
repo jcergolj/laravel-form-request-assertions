@@ -125,6 +125,20 @@ public function email_is_required()
 }
 ```
 
+### Test attribute has the rule
+When dealing with more complicated rules, you might extract logic to dedicated custom rule class. In that instance
+you don't want to test the logic inside RequestTest class but rather in dedicated custom rule test class. Here you are only
+interested if the give attribute has/contains the custom rule.
+
+```php
+public function email_has_custom_rule_applied()
+{
+    $this->createFormRequest(CreatePostRequest::class)
+        ->validate()
+        ->assertHasRule('email', CustomRule::class); // here we don't validate the rule, but just make sure rule is applied
+}
+```
+
 ### Test Form Request
 
 ```php
