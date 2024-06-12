@@ -125,19 +125,30 @@ public function email_is_required()
 }
 ```
 
-### Test passed validation rules
+### Test attribute has the rule
+When dealing with more complicated rules, you might extract logic to dedicated custom rule class. In that instance
+you don't want to test the logic inside RequestTest class but rather in dedicated custom rule test class. Here you are only
+interested if the give attribute has/contains the custom rule.
 
-In some situations you might not care weather the whole request validates but that a set of validation rules passes.
+```php
+public function email_has_custom_rule_applied()
+{
+    $this->createFormRequest(CreatePostRequest::class)
+        ->validate()
+        ->assertHasRule('email', new CustomRule); // here we don't validate the rule, but just make sure rule is applied
+}
+```
+
+### Test assert subset of rules didn't fail
+In some situations you might not care weather the whole request passed, but that only set of validation rules didn't fail.
 
 ```php
 public function test_email_is_not_required()
 {
-    /**
-     * Validation rules: ['email' => 'email|nullable']
-     */
+    /** Validation rules: ['email' => 'email|nullable'] */
     $this->createFormRequest(CreatePostRequest::class)
         ->validate([])
-        ->assertPassesRules(['email' => 'required']);
+        ->assertRulesWithoutFailures(['email' => 'required']);
 }
 ```
 
@@ -156,6 +167,21 @@ function test_post_author_is_authorized()
         ->withParam('post', $post)
         ->actingAs($author)
         ->assertAuthorized();
+}
+```
+
+### Test data preparation
+
+Test how data is prepared within the `prepareForValidation` method of the `FormRequest`.
+
+```php
+ /** @test */
+function test_transforms_email_to_lowercase_before_validation()
+{
+    $this->createFormRequest(CreatePostRequest::class)
+        ->onPreparedData(['email' => 'TeSt@ExAmPlE.cOm'], function (array $preparedData) {
+            $this->assertEquals('test@example.com', $preparedData['email']);
+        });
 }
 ```
 

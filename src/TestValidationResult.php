@@ -2,11 +2,12 @@
 
 namespace Jcergolj\FormRequestAssertions;
 
+use ReflectionClass;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Validation\Validator;
 use PHPUnit\Framework\Assert;
+use Illuminate\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class TestValidationResult
 {
@@ -95,6 +96,19 @@ class TestValidationResult
         return $failedRules;
     }
 
+    public function assertHasRule($attribute, $rule)
+    {
+        $reflection = new ReflectionClass($this->validator);
+        $reflectedValidation = $reflection->getProperty('initialRules');
+        $reflectedValidation->setAccessible(true);
+        $initialRules = $reflectedValidation->getValue($this->validator);
+
+
+        Assert::assertTrue(in_array($rule, $initialRules[$attribute]));
+
+        return $this;
+    }
+
     private function getValidationMessages($rule = null)
     {
         $messages = $this->validator->messages()->getMessages();
@@ -119,7 +133,7 @@ class TestValidationResult
         Assert::assertStringContainsString($constraints, $failedRules[$expectedFailedRule]);
     }
 
-    public function assertPassesRules($expectedPassedRules = []): static
+    public function assertRulesWithoutFailures($expectedPassedRules = []): static
     {
         if ($this->validator->passes()) {
             Assert::assertTrue(true); // Prevent assertion-count is 0
