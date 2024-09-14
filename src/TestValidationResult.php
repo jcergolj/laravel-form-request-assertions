@@ -57,16 +57,16 @@ class TestValidationResult
         dd($this->getFailedRules());
     }
 
-    public function assertHasMessage($message, $rule = null)
+    public function assertHasMessage($message, $field = null)
     {
-        $validationMessages = $this->getValidationMessages($rule);
+        $validationMessages = $this->getValidationMessages($field);
         Assert::assertContains(
             $message,
             $validationMessages,
             sprintf(
                 "\"%s\" was not contained in the failed%s validation messages\n%s",
                 $message,
-                $rule ? ' '.$rule : '',
+                $field ? ' '.$field : '',
                 json_encode($validationMessages, JSON_PRETTY_PRINT)
             )
         );
@@ -109,11 +109,11 @@ class TestValidationResult
         return $this;
     }
 
-    private function getValidationMessages($rule = null)
+    private function getValidationMessages($field = null)
     {
         $messages = $this->validator->messages()->getMessages();
-        if ($rule) {
-            return $messages[$rule] ?? [];
+        if ($field) {
+            return $messages[$field] ?? [];
         }
 
         return Arr::flatten($messages);
