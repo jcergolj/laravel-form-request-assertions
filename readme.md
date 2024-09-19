@@ -117,7 +117,7 @@ public function email_is_required()
     $this->createFormRequest(CreatePostRequest::class)
         ->validate(['email' => ''])
         ->assertFails(['email' => 'required'])
-	    ->assertHasMessage('Email is required', 'required');
+	->assertHasMessage('The email field is required.', 'email');
 
     $this->createFormRequest(CreatePostRequest::class)
         ->validate(['password' => 'short'])
