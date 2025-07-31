@@ -2,12 +2,12 @@
 
 namespace Jcergolj\FormRequestAssertions;
 
-use ReflectionClass;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\Assert;
-use Illuminate\Validation\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Validator;
+use PHPUnit\Framework\Assert;
+use ReflectionClass;
 
 class TestValidationResult
 {
@@ -35,22 +35,58 @@ class TestValidationResult
         return $this;
     }
 
-    public function assertFails($expectedFailedRules = [])
-    {
-        Assert::assertTrue($this->validator->fails());
+        public function assertFails($expectedFailedRules = [])
+{
+    Assert::assertTrue($this->validator->fails());
 
-        if (empty($expectedFailedRules)) {
-            return $this;
+    foreach ($expectedFailedRules as $attribute => $expectedRule) {
+        // Get the actual rule instances used
+        $rules = collect($this->validator->getRules()[$attribute] ?? []);
+
+        if ($expectedRule instanceof \Illuminate\Validation\Rules\Enum) {
+            // Extract expected enum class via reflection
+            $ref = new \ReflectionClass($expectedRule);
+            $prop = $ref->getProperty('type');
+            $prop->setAccessible(true);
+            $expectedEnumClass = $prop->getValue($expectedRule);
+
+            // Find Enum rule for this attribute
+            $enumRule = $rules->first(function ($rule) {
+                return $rule instanceof \Illuminate\Validation\Rules\Enum;
+            });
+
+            Assert::assertNotNull(
+                $enumRule,
+                "No Enum rule found on field [{$attribute}]."
+            );
+
+            // Compare enum class used in rule
+            $enumRef = new \ReflectionClass($enumRule);
+            $typeProp = $enumRef->getProperty('type');
+            $typeProp->setAccessible(true);
+            $actualEnumClass = $typeProp->getValue($enumRule);
+
+            Assert::assertSame(
+                $expectedEnumClass,
+                $actualEnumClass,
+                "Enum class mismatch on field [{$attribute}]. Expected {$expectedEnumClass}, got {$actualEnumClass}."
+            );
+        } else {
+            // For regular rule names (e.g. 'required')
+            $failedRules = $this->getFailedRules();
+
+            Assert::assertTrue(
+                isset($failedRules[$attribute]),
+                "Field [{$attribute}] did not fail as expected."
+            );
+
+            $this->assertRules($expectedRule, $failedRules, $attribute);
         }
-
-        $failedRules = $this->getFailedRules();
-
-        foreach ($expectedFailedRules as $expectedFailedRule => $constraints) {
-            $this->assertRules($constraints, $failedRules, $expectedFailedRule);
-        }
-
-        return $this;
     }
+
+    return $this;
+}
+
 
     public function ddFailedRules()
     {
@@ -102,7 +138,6 @@ class TestValidationResult
         $reflectedValidation = $reflection->getProperty('initialRules');
         $reflectedValidation->setAccessible(true);
         $initialRules = $reflectedValidation->getValue($this->validator);
-
 
         Assert::assertTrue(in_array($rule, $initialRules[$attribute]));
 

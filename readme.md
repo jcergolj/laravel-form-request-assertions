@@ -150,6 +150,14 @@ public function test_email_is_not_required()
         ->validate([])
         ->assertRulesWithoutFailures(['email' => 'required']);
 }
+
+public function test_status_is_valid_enum()
+{
+    /** Validation rules: ['status' => new \Illuminate\Validation\Rules\Enum(\App\Enums\StatusEnum::class)] */
+    $this->createFormRequest(CreatePostRequest::class)
+        ->validate(['status' => 'invalid-status'])
+        ->assertFails(['status' => new Enum(\App\Enums\StatusEnum::class)]);
+}
 ```
 
 **ALERT** this only checks that the rule didn't fail, it doesn't check that the rule was actually applied in the first place!
